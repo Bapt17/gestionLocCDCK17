@@ -17,9 +17,9 @@ private:
 public:
     Client(int id,
            const QString &nom,
-           const Qstring &prenom,
+           const QString &prenom,
            const QDate &dateNaissance,
-           const Qstring &genre,
+           const QString &genre,
            const QString &codePostal);
 
     int getId() const;

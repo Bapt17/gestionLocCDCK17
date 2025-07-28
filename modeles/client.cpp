@@ -2,9 +2,9 @@
 
 Client::Client(int id,
                const QString &nom,
-               const Qstring &prenom,
+               const QString &prenom,
                const QDate &dateNaissance,
-               const Qstring &genre,
+               const QString &genre,
                const QString &codePostal)
     : m_id(id)
     , m_nom(nom)
@@ -14,7 +14,7 @@ Client::Client(int id,
     , m_codePostal(codePostal)
 {}
 
-int client::getId() const
+int Client::getId() const
 {
     return m_id;
 }
