@@ -1,0 +1,45 @@
+#include "client.h"
+
+Client::Client(int id,
+               const QString &nom,
+               const Qstring &prenom,
+               const QDate &dateNaissance,
+               const Qstring &genre,
+               const QString &codePostal)
+    : m_id(id)
+    , m_nom(nom)
+    , m_prenom(prenom)
+    , m_dateNaissance(dateNaissance)
+    , m_genre(genre)
+    , m_codePostal(codePostal)
+{}
+
+int client::getId() const
+{
+    return m_id;
+}
+
+QString Client::getNom() const
+{
+    return m_nom;
+}
+
+QString Client::getPrenom() const
+{
+    return m_prenom;
+}
+
+QDate Client::getDateNaissance() const
+{
+    return m_dateNaissance;
+}
+
+QString Client::getGenre() const
+{
+    return m_genre;
+}
+
+QString Client::getCodePostal() const
+{
+    return m_codePostal;
+}
