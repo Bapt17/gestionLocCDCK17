@@ -1,6 +1,6 @@
 #include "client.h"
 
-Client::Client(int id,
+Client::Client(unsigned int id,
                const QString &nom,
                const QString &prenom,
                const QDate &dateNaissance,
@@ -14,7 +14,7 @@ Client::Client(int id,
     , m_codePostal(codePostal)
 {}
 
-int Client::getId() const
+unsigned int Client::getId() const
 {
     return m_id;
 }

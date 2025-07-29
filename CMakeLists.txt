@@ -18,6 +18,9 @@ qt_add_qml_module(appGestionLocCDCK17
     QML_FILES
         Main.qml
         SOURCES modeles/client.h modeles/client.cpp
+        SOURCES modeles/contrat.h modeles/contrat.cpp
+        SOURCES modeles/prestation.h modeles/prestation.cpp
+        SOURCES modeles/lignecontrat.h modeles/lignecontrat.cpp
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.

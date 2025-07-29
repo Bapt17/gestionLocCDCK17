@@ -6,28 +6,28 @@
 
 class Client
 {
-private:
-    int m_id;
-    QString m_nom;
-    QString m_prenom;
-    QDate m_dateNaissance;
-    QString m_genre;
-    QString m_codePostal;
-
 public:
-    Client(int id,
+    Client(unsigned int id,
            const QString &nom,
            const QString &prenom,
            const QDate &dateNaissance,
            const QString &genre,
            const QString &codePostal);
 
-    int getId() const;
+    unsigned int getId() const;
     QString getNom() const;
     QString getPrenom() const;
     QDate getDateNaissance() const;
     QString getGenre() const;
     QString getCodePostal() const;
+
+private:
+    unsigned int m_id;
+    QString m_nom;
+    QString m_prenom;
+    QDate m_dateNaissance;
+    QString m_genre;
+    QString m_codePostal;
 };
 
 #endif // CLIENT_H
