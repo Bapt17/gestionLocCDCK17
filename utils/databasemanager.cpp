@@ -39,7 +39,7 @@ bool DataBaseManager::initialiser(const QString &chemin) {
                         "tarifAdulte NUMERIC NOT NULL,"
                         "tarifU12 NUMERIC NOT NULL,"
                         "tarifU8 NUMERIC NOT NULL,"
-                        "type TEXT NOT NULL")) {
+                        "type TEXT NOT NULL)")) {
         qDebug() << "Erreur: impossible de créer la table prestations";
       }
 
@@ -51,9 +51,9 @@ bool DataBaseManager::initialiser(const QString &chemin) {
               "NOT NULL,"
               "dateHeure TEXT NOT NULL,"
               "remise NUMERIC NOT NULL DEFAULT 0,"
-              "etat INTEGER NOT NULL DEFAULT 0" // etat est a 0 pour brouillon,
-                                                // 1 pour confirme et
-                                                // -1 pour supprimé
+              "etat INTEGER NOT NULL DEFAULT 0)" // etat est a 0 pour brouillon,
+                                                 // 1 pour confirme et
+                                                 // -1 pour supprimé
               )) {
         qDebug() << "Erreur: impossible de créer la table contrats";
       }
@@ -63,10 +63,27 @@ bool DataBaseManager::initialiser(const QString &chemin) {
               "CREATE TABLE lignesContrat ("
               "idLigne INTEGER PRIMARY KEY AUTOINCREMENT,"
               "FOREIGN KEY(idContrat) REFERENCES contrats(idContrat) NOT NULL,"
-              "FOREIGN KEY(idClient) REFERENCES clients(idClients) NOT NULL,"
+              "FOREIGN KEY(idClient) REFERENCES clients(idClient) NOT NULL,"
               "embarcation TEXT NOT NULL,"
-              "prix NUMERIC NOT NULL")) {
+              "prix NUMERIC NOT NULL)")) {
         qDebug() << "Erreur: impossible de créer la table lignesContrat";
+      }
+
+      // table pour gérer et garder en mémoire la version
+      if (!requete.exec(
+              "CREATE TABLE schema_versions ("
+              "version INTEGER PRIMARY KEY,"
+              "description TEXT,"
+              "dateInstallation TIMESTAMP DEFAULT CURRENT_TIMESTAMP)")) {
+        qDebug() << "Erreur: impossible de créer la table schemas_versions";
+      }
+
+      // insertion de la version actuelle de la bdd dans le schemas
+      if (!requete.exec("INSERT INTO schema_versions(version, description) "
+                        "VALUES (0,'Version initiale avec clients, "
+                        "prestations, contrats et lignesContrat')")) {
+        qDebug() << "Erreur: impossible d'e créer la table "
+                    "lignesContrat'insérer la version";
       }
 
     } else {
@@ -74,6 +91,11 @@ bool DataBaseManager::initialiser(const QString &chemin) {
       if (!m_database.open()) {
         qDebug() << "Erreur: impossible d'ouvrir la base de données existante.";
         return false;
+      }
+      // on met a jour la base de donnée si besoin
+      if (!mettreAJourBDD()) {
+        qDebug() << "Erreur: un fichier de base de donnée existe mais il ne "
+                    "contient pas de version.";
       }
     }
   } else {
@@ -86,3 +108,27 @@ bool DataBaseManager::initialiser(const QString &chemin) {
 QSqlDatabase &DataBaseManager::getDatabase() { return m_database; }
 
 void DataBaseManager::close() { m_database.close(); }
+
+// TODO: cette fonction pourrait potentiellement être mise ailleurs pour
+// l'executer dans un script seulement à la mise a jour
+bool DataBaseManager::mettreAJourBDD() {
+  QSqlQuery query(m_database);
+
+  // on récupère la verion de la base de données actuelle
+  query.exec(
+      "SELECT version FROM schema_versions ORDER BY version DESC LIMIT 1");
+  int versionActuelle = 0;
+  // si il y a bien une version d'enregistrée on la récupère, sinon la base de
+  // donnée actuelle n'est pas correcte
+  if (query.next()) {
+    versionActuelle = query.value(0).toInt();
+  } else {
+    return false;
+  }
+
+  // on appliquera ici pour chaque version dans l'ordre les changements a
+  // effectuer pour permettre la migration vers la derniere version sans pertes.
+  // il faudra penser a insérer dans la base de donnée la derniere version vers
+  // laquelle on a migré pour éviter de répéter l'opération
+  return true;
+}
