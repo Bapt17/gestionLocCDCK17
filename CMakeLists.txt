@@ -1,3 +1,18 @@
+#Copyright 2025 Baptiste HUCHON
+
+#This file is part of GestionLocCDCK17.
+#
+#GestionLocCDCK17 is free software: you can redistribute it and/or modify it under the terms of the
+#GNU General Public License as published by the Free Software Foundation, either version
+#3 of the License, or (at your option) any later version.
+#
+#GestionLocCDCK17 is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+#without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+#PURPOSE. See the GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License along with GestionLocCDCK17.If
+#not, see https://www.gnu.org/licenses/.
+
 cmake_minimum_required(VERSION 3.16)
 
 project(GestionLocCDCK17 VERSION 0.1 LANGUAGES CXX)
@@ -22,6 +37,8 @@ qt_add_qml_module(appGestionLocCDCK17
         SOURCES modeles/prestation.h modeles/prestation.cpp
         SOURCES modeles/lignecontrat.h modeles/lignecontrat.cpp
         SOURCES utils/databasemanager.h utils/databasemanager.cpp
+        SOURCES
+        SOURCES repositories/clientrepository.h repositories/clientrepository.cpp
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.

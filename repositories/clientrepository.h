@@ -15,31 +15,29 @@
  * You should have received a copy of the GNU General Public License along with
  * GestionLocCDCK17.If not, see https://www.gnu.org/licenses/.*/
 
-#ifndef LIGNECONTRAT_H
-#define LIGNECONTRAT_H
+#ifndef CLIENTREPOSITORY_H
+#define CLIENTREPOSITORY_H
 
-#include <QString>
+#include "modeles/client.h"
+#include "utils/databasemanager.h"
+#include <QList>
 
-#include "client.h"
-#include "contrat.h"
-
-class LigneContrat {
+/**
+ * @brief La classe ClientRepository a pour but de faire le lien avec la base de
+ * donnée pour y enregistrer, récupérer ou mettre a jour les clients dans la bdd
+ */
+class ClientRepository {
 public:
-  LigneContrat(unsigned int id, const Client &client, const Contrat &contrat,
-               const QString &embarcation, float prix);
+  ClientRepository(DataBaseManager &dbManager);
 
-  unsigned int getId() const;
-  Client getClient() const;
-  Contrat getContrat() const;
-  QString getEmbarcation() const;
-  float getPrix() const;
+  bool addClient(const Client &client);
+  bool updateClient(const Client &client);
+  bool deleteClient(unsigned int id);
+  QList<Client> getAllClients();
+  Client getClientById(unsigned int id);
 
 private:
-  unsigned int m_id;
-  Client m_client;
-  Contrat m_contrat;
-  QString m_embarcation;
-  float m_prix;
+  DataBaseManager &m_dbManager;
 };
 
-#endif // LIGNECONTRAT_H
+#endif // CLIENTREPOSITORY_H
