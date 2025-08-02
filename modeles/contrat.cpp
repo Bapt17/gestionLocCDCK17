@@ -24,6 +24,8 @@ Contrat::Contrat(unsigned int id, const Prestation &prestation,
 
 unsigned int Contrat::getId() const { return m_id; }
 
+Prestation getPrestation() const { return m_prestation; }
+
 QDateTime Contrat::getDateHeure() const { return m_dateHeure; }
 
 float Contrat::getRemise() const { return m_remise; }
