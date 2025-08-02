@@ -39,6 +39,7 @@ qt_add_qml_module(appGestionLocCDCK17
         SOURCES utils/databasemanager.h utils/databasemanager.cpp
         SOURCES
         SOURCES repositories/clientrepository.h repositories/clientrepository.cpp
+        SOURCES repositories/prestationrepository.h repositories/prestationrepository.cpp
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
