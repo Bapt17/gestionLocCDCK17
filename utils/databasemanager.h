@@ -29,7 +29,7 @@ public:
    * @param chemin chemin du fichier.db contenant la base de données
    * @return false en cas d'echec, true sinon
    */
-  static bool initialiser(const QString &chemin = "licationCK.db");
+  static bool initialiser(const QString &chemin = "locationCK.db");
   static QSqlDatabase &getDatabase();
   static void close();
 
