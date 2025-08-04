@@ -78,16 +78,15 @@ bool LigneContratRepository::deleteLigneContrat(unsigned int id) {
 QList<LigneContrat> LigneContratRepository::getAllLignesContrat() {
   QList<LigneContrat> lignesContrat;
   QSqlQuery query("SELECT * FROM lignesContrat", m_dbManager.getDatabase());
+  ClientRepository clientRepo(m_dbManager);
 
   while (query.next()) {
-    // on récupère le client relié grace a son id
-    ClientRepository clientRepo(m_dbManager);
-    Client client = clientRepo.getClientById(query.value("idClient").toUInt());
-
-    LigneContrat ligneContrat(query.value("idLigne").toUInt(), client,
-                              query.value("idContrat").toUInt(),
-                              query.value("embarcation").toString(),
-                              query.value("prix").toFloat());
+    LigneContrat ligneContrat(
+        query.value("idLigne").toUInt(),
+        // on récupère le client relié grace a son id
+        clientRepo.getClientById(query.value("idClient").toUInt()),
+        query.value("idContrat").toUInt(),
+        query.value("embarcation").toString(), query.value("prix").toFloat());
     lignesContrat.append(ligneContrat);
   }
 
@@ -114,4 +113,25 @@ LigneContrat LigneContratRepository::getLigneContratById(unsigned int id) {
                       query.value("idContrat").toUInt(),
                       query.value("embarcation").toString(),
                       query.value("prix").toFloat());
+}
+
+QList<LigneContrat>
+LigneContratRepository::getAllLignesByIdContrat(unsigned int id) {
+  QList<LigneContrat> lignesContrat;
+  QSqlQuery query("SELECT idLigne, idClient, embarcation, prix"
+                  "FROM lignesContrat"
+                  "WHERE idContrat = :id",
+                  m_dbManager.getDatabase());
+  ClientRepository clientRepo(m_dbManager);
+
+  while (query.next()) {
+    LigneContrat ligneContrat(
+        query.value("idLigne").toUInt(),
+        // on récupère le client relié grace a son id
+        clientRepo.getClientById(query.value("idClient").toUInt()), id,
+        query.value("embarcation").toString(), query.value("prix").toFloat());
+    lignesContrat.append(ligneContrat);
+  }
+
+  return lignesContrat;
 }

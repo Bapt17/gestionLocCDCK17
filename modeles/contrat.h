@@ -15,6 +15,9 @@
  * You should have received a copy of the GNU General Public License along with
  * GestionLocCDCK17.If not, see https://www.gnu.org/licenses/.*/
 
+// TODO: ATTENTION LE GETCONFIRME EST UN BOOL ALORS QUE L4ON PEUT AVOIR 1 0 ou
+// -1 pour confirme en attente ou supprimé
+
 #ifndef CONTRAT_H
 #define CONTRAT_H
 

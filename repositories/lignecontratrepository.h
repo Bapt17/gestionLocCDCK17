@@ -36,6 +36,12 @@ public:
   bool deleteLigneContrat(unsigned int id);
   QList<LigneContrat> getAllLignesContrat();
   LigneContrat getLigneContratById(unsigned int id);
+  /**
+   * @brief getAllLignesByIdContrat récupère les lignes liés a un contrat
+   * @param id identifiant du contrat pour lequel on veut les lignes
+   * @return la liste des ligneContrat associées.
+   */
+  QList<LigneContrat> getAllLignesByIdContrat(unsigned int id);
 
 private:
   DataBaseManager &m_dbManager;
