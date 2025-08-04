@@ -21,23 +21,22 @@
 #include <QString>
 
 #include "client.h"
-#include "contrat.h"
 
 class LigneContrat {
 public:
-  LigneContrat(unsigned int id, const Client &client, const Contrat &contrat,
+  LigneContrat(unsigned int id, const Client &client, unsigned int idContrat,
                const QString &embarcation, float prix);
 
   unsigned int getId() const;
   Client getClient() const;
-  Contrat getContrat() const;
+  unsigned int getIdContrat() const;
   QString getEmbarcation() const;
   float getPrix() const;
 
 private:
   unsigned int m_id;
   Client m_client;
-  Contrat m_contrat;
+  unsigned int m_idContrat;
   QString m_embarcation;
   float m_prix;
 };

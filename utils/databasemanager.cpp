@@ -64,14 +64,14 @@ bool DataBaseManager::initialiser(const QString &chemin) {
       if (!requete.exec(
               "CREATE TABLE contrats ("
               "idContrat INTEGER PRIMARY KEY,"
-              "FOREIGN KEY(idPrestation) REFERENCES prestations(idPrestation), "
-              "NOT NULL,"
+              "idPrestation INTEGER NOT NULL,"
               "dateHeure TEXT NOT NULL,"
               "remise NUMERIC NOT NULL DEFAULT 0,"
-              "etat INTEGER NOT NULL DEFAULT 0)" // etat est a 0 pour brouillon,
+              "etat INTEGER NOT NULL DEFAULT 0," // etat est a 0 pour brouillon,
                                                  // 1 pour confirme et
                                                  // -1 pour supprimé
-              )) {
+              "FOREIGN KEY(idPrestation) REFERENCES "
+              "prestations(idPrestation))")) {
         qDebug() << "Erreur: impossible de créer la table contrats";
       }
 
@@ -79,10 +79,12 @@ bool DataBaseManager::initialiser(const QString &chemin) {
       if (!requete.exec(
               "CREATE TABLE lignesContrat ("
               "idLigne INTEGER PRIMARY KEY AUTOINCREMENT,"
-              "FOREIGN KEY(idContrat) REFERENCES contrats(idContrat) NOT NULL,"
-              "FOREIGN KEY(idClient) REFERENCES clients(idClient) NOT NULL,"
+              "idContrat INTEGER NOT NULL,"
+              "idClient INTEGER NOT NULL,"
               "embarcation TEXT NOT NULL,"
-              "prix NUMERIC NOT NULL)")) {
+              "prix NUMERIC NOT NULL,"
+              "FOREIGN KEY(idContrat) REFERENCES contrats(idContrat),"
+              "FOREIGN KEY(idClient) REFERENCES clients(idClient))")) {
         qDebug() << "Erreur: impossible de créer la table lignesContrat";
       }
 

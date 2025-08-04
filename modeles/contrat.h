@@ -18,8 +18,10 @@
 #ifndef CONTRAT_H
 #define CONTRAT_H
 
+#include "lignecontrat.h"
 #include "prestation.h"
 #include <QDateTime>
+#include <QList>
 #include <QString>
 /**
  * @brief La classe contrat fait le lien entre les lignes, le contrat et la
@@ -28,13 +30,15 @@
 class Contrat {
 public:
   Contrat(unsigned int id, const Prestation &prestation,
-          const QDateTime &dateHeure, float remise, bool confirme);
+          const QDateTime &dateHeure, float remise, bool confirme,
+          QList<LigneContrat> &lignes);
 
   unsigned int getId() const;
   Prestation getPrestation() const;
   QDateTime getDateHeure() const;
   float getRemise() const;
   bool getConfirme() const;
+  QList<LigneContrat> getLignes() const;
 
 private:
   unsigned int m_id;
@@ -44,6 +48,7 @@ private:
                    // suite
   bool m_confirme; // défini si le contrat est terminé et fini d'être
                    // remplie/payé
+  QList<LigneContrat> m_lignes; // liste des lignes liés au contrat
 };
 
 #endif // CONTRAT_H
