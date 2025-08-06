@@ -21,27 +21,27 @@
 #include "modeles/lignecontrat.h"
 #include "utils/databasemanager.h"
 #include <QList>
+#include <QObject>
 
 /**
  * @brief La classe LigneContratRepository a pour but de faire le lien avec la
  * base de donnée pour y enregistrer, récupérer ou mettre à jour les lignes de
  * contrat dans la bdd.
  */
-class LigneContratRepository {
-public:
-  LigneContratRepository(DataBaseManager &dbManager);
+class LigneContratRepository : public QObject {
+  Q_OBJECT
 
-  bool addLigneContrat(const LigneContrat &ligneContrat);
-  bool updateLigneContrat(const LigneContrat &ligneContrat);
-  bool deleteLigneContrat(unsigned int id);
-  QList<LigneContrat> getAllLignesContrat();
-  LigneContrat getLigneContratById(unsigned int id);
-  /**
-   * @brief getAllLignesByIdContrat récupère les lignes liés a un contrat
-   * @param id identifiant du contrat pour lequel on veut les lignes
-   * @return la liste des ligneContrat associées.
-   */
-  QList<LigneContrat> getAllLignesByIdContrat(unsigned int id);
+public:
+  explicit LigneContratRepository(
+      QObject *parent = nullptr,
+      DataBaseManager &dbManager = DataBaseManager::getInstance());
+
+  Q_INVOKABLE bool addLigneContrat(const LigneContrat &ligneContrat);
+  Q_INVOKABLE bool updateLigneContrat(const LigneContrat &ligneContrat);
+  Q_INVOKABLE bool deleteLigneContrat(unsigned int id);
+  Q_INVOKABLE QList<QObject *> getAllLignesContrat();
+  Q_INVOKABLE QObject *getLigneContratById(unsigned int id);
+  Q_INVOKABLE QList<QObject *> getAllLignesByIdContrat(unsigned int id);
 
 private:
   DataBaseManager &m_dbManager;

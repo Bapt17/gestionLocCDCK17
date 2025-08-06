@@ -15,9 +15,6 @@
  * You should have received a copy of the GNU General Public License along with
  * GestionLocCDCK17.If not, see https://www.gnu.org/licenses/.*/
 
-#include "modeles/client.h"
-#include "repositories/clientrepository.h"
-#include "utils/databasemanager.h"
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 
@@ -25,20 +22,6 @@ int main(int argc, char *argv[]) {
   QGuiApplication app(argc, argv);
 
   QQmlApplicationEngine engine;
-
-  // test de la bdd
-  DataBaseManager dbManager;
-  if (dbManager.initialiser()) {
-    ClientRepository clientRepository(dbManager);
-    Client newClient(0, "Nom", "Prenom", QDate(1990, 1, 1), "M", "12345");
-    if (clientRepository.addClient(newClient)) {
-      qDebug() << "Client added successfully";
-    } else {
-      qDebug() << "Failed to add client";
-    }
-    clientRepository.deleteClient(0);
-    dbManager.close();
-  }
 
   QObject::connect(
       &engine, &QQmlApplicationEngine::objectCreationFailed, &app,

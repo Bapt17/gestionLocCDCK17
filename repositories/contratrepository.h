@@ -21,21 +21,37 @@
 #include "modeles/contrat.h"
 #include "utils/databasemanager.h"
 #include <QList>
+#include <QObject>
 
 /**
  * @brief La classe ContratRepository a pour but de faire le lien avec la base
  * de donnée pour y enregistrer, récupérer ou mettre à jour les contrats dans la
  * bdd.
  */
-class ContratRepository {
-public:
-  ContratRepository(DataBaseManager &dbManager);
+class ContratRepository : public QObject {
+  Q_OBJECT
+  Q_PROPERTY(QList<QObject *> contratsNonConfirmes READ getContratsNonConfirmes
+                 NOTIFY contratsNonConfirmesChanged)
+  Q_PROPERTY(QList<QObject *> contratsConfirmes READ getContratsConfirmes NOTIFY
+                 contratsConfirmesChanged)
 
-  bool addContrat(const Contrat &contrat);
-  bool updateContrat(const Contrat &contrat);
-  bool deleteContrat(unsigned int id);
-  QList<Contrat> getAllContrats();
-  Contrat getContratById(unsigned int id);
+public:
+  explicit ContratRepository(
+      QObject *parent = nullptr,
+      DataBaseManager &dbManager = DataBaseManager::getInstance());
+
+  Q_INVOKABLE bool addContrat(const Contrat &contrat);
+  Q_INVOKABLE bool updateContrat(const Contrat &contrat);
+  Q_INVOKABLE bool deleteContrat(unsigned int id);
+  Q_INVOKABLE QList<QObject *> getAllContrats();
+  Q_INVOKABLE QObject *getContratById(unsigned int id);
+
+  QList<QObject *> getContratsNonConfirmes();
+  QList<QObject *> getContratsConfirmes();
+
+signals:
+  void contratsNonConfirmesChanged();
+  void contratsConfirmesChanged();
 
 private:
   DataBaseManager &m_dbManager;

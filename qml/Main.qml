@@ -22,4 +22,15 @@ Window {
     height: 480
     visible: true
     title: qsTr("Hello World")
+    Rectangle{
+        width: 20
+        height: 30
+        x: 10
+        y: 20
+        color: "blue"
+        Text {
+            id: text
+            text: qsTr("HELLO")
+        }
+    }
 }

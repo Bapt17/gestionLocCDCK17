@@ -21,20 +21,21 @@
 #include "modeles/client.h"
 #include "utils/databasemanager.h"
 #include <QList>
+#include <QObject>
 
-/**
- * @brief La classe ClientRepository a pour but de faire le lien avec la base de
- * donnée pour y enregistrer, récupérer ou mettre a jour les clients dans la bdd
- */
-class ClientRepository {
+class ClientRepository : public QObject {
+  Q_OBJECT
+
 public:
-  ClientRepository(DataBaseManager &dbManager);
+  explicit ClientRepository(
+      QObject *parent = nullptr,
+      DataBaseManager &dbManager = DataBaseManager::getInstance());
 
-  bool addClient(const Client &client);
-  bool updateClient(const Client &client);
-  bool deleteClient(unsigned int id);
-  QList<Client> getAllClients();
-  Client getClientById(unsigned int id);
+  Q_INVOKABLE bool addClient(const Client &client);
+  Q_INVOKABLE bool updateClient(const Client &client);
+  Q_INVOKABLE bool deleteClient(unsigned int id);
+  Q_INVOKABLE QList<QObject *> getAllClients();
+  Q_INVOKABLE QObject *getClientById(unsigned int id);
 
 private:
   DataBaseManager &m_dbManager;

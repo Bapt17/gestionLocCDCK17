@@ -19,13 +19,25 @@
 #define CLIENT_H
 
 #include <QDate>
+#include <QObject>
 #include <QString>
 
-class Client {
+class Client : public QObject {
+  // utilisation de la macro qobject pour spécifier les éléments accessibles
+  // dans le qml
+  Q_OBJECT
+  Q_PROPERTY(unsigned int id READ getId CONSTANT)
+  Q_PROPERTY(QString nom READ getNom CONSTANT)
+  Q_PROPERTY(QString prenom READ getPrenom CONSTANT)
+  Q_PROPERTY(QDate dateNaissance READ getDateNaissance CONSTANT)
+  Q_PROPERTY(QString genre READ getGenre CONSTANT)
+  Q_PROPERTY(QString codePostal READ getCodePostal CONSTANT)
+
 public:
-  Client(unsigned int id, const QString &nom, const QString &prenom,
-         const QDate &dateNaissance, const QString &genre,
-         const QString &codePostal);
+  explicit Client(QObject *parent = nullptr, unsigned int id = 0,
+                  const QString &nom = "", const QString &prenom = "",
+                  const QDate &dateNaissance = QDate(),
+                  const QString &genre = "", const QString &codePostal = "");
 
   unsigned int getId() const;
   QString getNom() const;

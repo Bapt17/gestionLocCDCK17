@@ -32,6 +32,12 @@ public:
   static bool initialiser(const QString &chemin = "locationCK.db");
   static QSqlDatabase &getDatabase();
   static void close();
+  /**
+   * @brief getInstance acces a une instance de databasemanager, évite de créer
+   * plusieurs objets databasemanager
+   * @return une instance de databasemanager
+   */
+  static DataBaseManager &getInstance();
 
 private:
   static QSqlDatabase m_database;

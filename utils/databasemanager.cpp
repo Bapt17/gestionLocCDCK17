@@ -151,3 +151,8 @@ bool DataBaseManager::mettreAJourBDD() {
   // laquelle on a migré pour éviter de répéter l'opération
   return true;
 }
+
+DataBaseManager &DataBaseManager::getInstance() {
+  static DataBaseManager instance;
+  return instance;
+}

@@ -21,8 +21,9 @@
 #include <QSqlQuery>
 #include <QVariant>
 
-PrestationRepository::PrestationRepository(DataBaseManager &dbManager)
-    : m_dbManager(dbManager) {}
+PrestationRepository::PrestationRepository(QObject *parent,
+                                           DataBaseManager &dbManager)
+    : QObject(parent), m_dbManager(dbManager) {}
 
 bool PrestationRepository::addPrestation(const Prestation &prestation) {
   QSqlQuery query(m_dbManager.getDatabase());
@@ -76,24 +77,25 @@ bool PrestationRepository::deletePrestation(unsigned int id) {
   return true;
 }
 
-QList<Prestation> PrestationRepository::getAllPrestations() {
-  QList<Prestation> prestations;
+QList<QObject *> PrestationRepository::getAllPrestations() {
+  QList<QObject *> prestations;
   QSqlQuery query("SELECT * FROM Prestations", m_dbManager.getDatabase());
 
   // on cree des prestations et on les ajoute a la liste tant qu'il y en a de
   // récupérés
   while (query.next()) {
-    Prestation prestation(
-        query.value("idPrestation").toUInt(), query.value("nom").toString(),
-        query.value("type").toString(), query.value("tarifAdulte").toFloat(),
-        query.value("tarifU12").toFloat(), query.value("tarifU8").toFloat());
+    QObject *prestation = new Prestation(
+        nullptr, query.value("idPrestation").toUInt(),
+        query.value("nom").toString(), query.value("type").toString(),
+        query.value("tarifAdulte").toFloat(), query.value("tarifU12").toFloat(),
+        query.value("tarifU8").toFloat());
     prestations.append(prestation);
   }
   // on restourne la liste
   return prestations;
 }
 
-Prestation PrestationRepository::getPrestationById(unsigned int id) {
+QObject *PrestationRepository::getPrestationById(unsigned int id) {
   QSqlQuery query(m_dbManager.getDatabase());
   query.prepare("SELECT * FROM prestations WHERE idPrestation = :id");
   query.bindValue(":id", id);
@@ -101,10 +103,12 @@ Prestation PrestationRepository::getPrestationById(unsigned int id) {
   if (!query.exec() || !query.next()) {
     qDebug() << "Erreur lor de la recupération de la prestation par son ID:"
              << query.lastError();
-    return Prestation(id, "", "", 0, 0, 0); // TODO: gérer l'erreur autrement
+    return nullptr; // TODO: gérer l'erreur autrement
   }
-  return Prestation(
-      query.value("idPrestation").toUInt(), query.value("nom").toString(),
-      query.value("type").toString(), query.value("tarifAdulte").toFloat(),
-      query.value("tarifU12").toFloat(), query.value("tarifU8").toFloat());
+  QObject *prestation = new Prestation(
+      nullptr, query.value("idPrestation").toUInt(),
+      query.value("nom").toString(), query.value("type").toString(),
+      query.value("tarifAdulte").toFloat(), query.value("tarifU12").toFloat(),
+      query.value("tarifU8").toFloat());
+  return prestation;
 }

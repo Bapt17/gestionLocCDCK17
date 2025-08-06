@@ -31,13 +31,12 @@ qt_add_qml_module(appGestionLocCDCK17
     URI GestionLocCDCK17
     VERSION 1.0
     QML_FILES
-        Main.qml
+        qml/Main.qml
         SOURCES modeles/client.h modeles/client.cpp
         SOURCES modeles/contrat.h modeles/contrat.cpp
         SOURCES modeles/prestation.h modeles/prestation.cpp
         SOURCES modeles/lignecontrat.h modeles/lignecontrat.cpp
         SOURCES utils/databasemanager.h utils/databasemanager.cpp
-        SOURCES
         SOURCES repositories/clientrepository.h repositories/clientrepository.cpp
         SOURCES repositories/prestationrepository.h repositories/prestationrepository.cpp
         SOURCES repositories/lignecontratrepository.h repositories/lignecontratrepository.cpp

@@ -18,6 +18,7 @@
 #ifndef PRESTATION_H
 #define PRESTATION_H
 
+#include <QObject>
 #include <QString>
 
 /**
@@ -25,18 +26,40 @@
  * etc...) avec les tarifs pour les adultes les moins de 8 ans et moins de 12
  * ans
  */
-class Prestation {
+class Prestation : public QObject {
+  // utilisation de la macro qobject pour spécifier les éléments accessibles
+  // dans le qml
+  Q_OBJECT
+  Q_PROPERTY(unsigned int id READ getId CONSTANT)
+  Q_PROPERTY(QString nom READ getNom CONSTANT)
+  Q_PROPERTY(QString type READ getType CONSTANT)
+  Q_PROPERTY(float tarifAdulte READ getTarifAdulte WRITE setTarifAdulte NOTIFY
+                 tarifAdultChanged)
+  Q_PROPERTY(
+      float tarifU12 READ getTarifU12 WRITE setTarifU12 NOTIFY tarifU12Changed)
+  Q_PROPERTY(
+      float tarifU8 READ getTarifU8 WRITE setTarifU8 NOTIFY tarifU8Changed)
+
 public:
-  Prestation(unsigned int id, const QString &nom, const QString &type,
-             const float tarifAdulte, const float tarifU12,
-             const float tarifU8);
+  explicit Prestation(QObject *parent = nullptr, unsigned int id = 0,
+                      const QString &nom = "", const QString &type = "",
+                      float tarifAdulte = 0.0f, float tarifU12 = 0.0f,
+                      float tarifU8 = 0.0f);
 
   unsigned int getId() const;
   QString getNom() const;
   QString getType() const;
   float getTarifAdulte() const;
+  void setTarifAdulte(float tarif);
   float getTarifU12() const;
+  void setTarifU12(float tarif);
   float getTarifU8() const;
+  void setTarifU8(float tarif);
+
+signals:
+  void tarifAdultChanged();
+  void tarifU12Changed();
+  void tarifU8Changed();
 
 private:
   unsigned int m_id;

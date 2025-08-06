@@ -17,20 +17,24 @@
 
 #include "contrat.h"
 
-Contrat::Contrat(unsigned int id, const Prestation &prestation,
-                 const QDateTime &dateHeure, float remise, bool confirme,
-                 QList<LigneContrat> &lignes)
+Contrat::Contrat(QObject *parent, unsigned int id, Prestation *prestation,
+                 const QDateTime &dateHeure, float remise, int etat,
+                 QList<QObject *> lignes)
     : m_id(id), m_prestation(prestation), m_dateHeure(dateHeure),
-      m_remise(remise), m_confirme(confirme), m_lignes(lignes) {}
+      m_remise(remise), m_etat(etat), m_lignes(lignes) {}
 
 unsigned int Contrat::getId() const { return m_id; }
 
-Prestation Contrat::getPrestation() const { return m_prestation; }
+Prestation *Contrat::getPrestation() const { return m_prestation; }
 
 QDateTime Contrat::getDateHeure() const { return m_dateHeure; }
 
 float Contrat::getRemise() const { return m_remise; }
 
-bool Contrat::getConfirme() const { return m_confirme; }
+void Contrat::setRemise(float remise) { m_remise = remise; }
 
-QList<LigneContrat> Contrat::getLignes() const { return m_lignes; }
+int Contrat::getEtat() const { return m_etat; }
+void Contrat::setEtat(int etat) { m_etat = etat; }
+
+QList<QObject *> Contrat::getLignes() const { return m_lignes; }
+void Contrat::setLignes(const QList<QObject *> &lignes) { m_lignes = lignes; }

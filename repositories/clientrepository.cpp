@@ -21,8 +21,8 @@
 #include <QSqlQuery>
 #include <QVariant>
 
-ClientRepository::ClientRepository(DataBaseManager &dbManager)
-    : m_dbManager(dbManager) {}
+ClientRepository::ClientRepository(QObject *parent, DataBaseManager &dbManager)
+    : QObject(parent), m_dbManager(dbManager) {}
 
 bool ClientRepository::addClient(const Client &client) {
   QSqlQuery query(m_dbManager.getDatabase());
@@ -76,14 +76,14 @@ bool ClientRepository::deleteClient(unsigned int id) {
   return true;
 }
 
-QList<Client> ClientRepository::getAllClients() {
-  QList<Client> clients;
+QList<QObject *> ClientRepository::getAllClients() {
+  QList<QObject *> clients;
   QSqlQuery query("SELECT * FROM clients", m_dbManager.getDatabase());
 
   while (query.next()) {
-    Client client(
-        query.value("idClient").toUInt(), query.value("nom").toString(),
-        query.value("prenom").toString(),
+    QObject *client = new Client(
+        nullptr, query.value("idClient").toUInt(),
+        query.value("nom").toString(), query.value("prenom").toString(),
         QDate::fromString(query.value("dateNaissance").toString(),
                           "yyyy-MM-dd"),
         query.value("genre").toString(), query.value("codePostal").toString());
@@ -93,7 +93,7 @@ QList<Client> ClientRepository::getAllClients() {
   return clients;
 }
 
-Client ClientRepository::getClientById(unsigned int id) {
+QObject *ClientRepository::getClientById(unsigned int id) {
   QSqlQuery query(m_dbManager.getDatabase());
   query.prepare("SELECT * FROM clients WHERE idClient = :id");
   query.bindValue(":id", id);
@@ -101,11 +101,11 @@ Client ClientRepository::getClientById(unsigned int id) {
   if (!query.exec() || !query.next()) {
     qDebug() << "Erreur lor de la recupération du client par son ID:"
              << query.lastError();
-    return Client(0, "", "", QDate(), "", ""); // TODO: gérer l'erreur autrement
+    return nullptr;
   }
 
-  return Client(
-      query.value("idClient").toUInt(), query.value("nom").toString(),
+  return new Client(
+      nullptr, query.value("idClient").toUInt(), query.value("nom").toString(),
       query.value("prenom").toString(),
       QDate::fromString(query.value("dateNaissance").toString(), "yyyy-MM-dd"),
       query.value("genre").toString(), query.value("codePostal").toString());

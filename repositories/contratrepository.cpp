@@ -23,8 +23,9 @@
 #include <QSqlQuery>
 #include <QVariant>
 
-ContratRepository::ContratRepository(DataBaseManager &dbManager)
-    : m_dbManager(dbManager) {}
+ContratRepository::ContratRepository(QObject *parent,
+                                     DataBaseManager &dbManager)
+    : QObject(parent), m_dbManager(dbManager) {}
 
 bool ContratRepository::addContrat(const Contrat &contrat) {
   QSqlQuery query(m_dbManager.getDatabase());
@@ -32,11 +33,11 @@ bool ContratRepository::addContrat(const Contrat &contrat) {
       "INSERT INTO contrats (idContrat, idPrestation, dateHeure, remise, etat) "
       "VALUES (:id, :idPrestation, :dateHeure, :remise, :etat)");
   query.bindValue(":id", contrat.getId());
-  query.bindValue(":idPrestation", contrat.getPrestation().getId());
+  query.bindValue(":idPrestation", contrat.getPrestation()->getId());
   query.bindValue(":dateHeure",
                   contrat.getDateHeure().toString("yyyy-MM-dd hh:mm:ss"));
   query.bindValue(":remise", contrat.getRemise());
-  query.bindValue(":etat", contrat.getConfirme());
+  query.bindValue(":etat", contrat.getEtat());
 
   if (!query.exec()) {
     qDebug() << "Erreur à l'ajout du contrat:" << query.lastError();
@@ -50,11 +51,11 @@ bool ContratRepository::updateContrat(const Contrat &contrat) {
   query.prepare("UPDATE contrats SET idPrestation = :idPrestation, dateHeure = "
                 ":dateHeure, "
                 "remise = :remise, etat = :etat WHERE idContrat = :id");
-  query.bindValue(":idPrestation", contrat.getPrestation().getId());
+  query.bindValue(":idPrestation", contrat.getPrestation()->getId());
   query.bindValue(":dateHeure",
                   contrat.getDateHeure().toString("yyyy-MM-dd hh:mm:ss"));
   query.bindValue(":remise", contrat.getRemise());
-  query.bindValue(":etat", contrat.getConfirme());
+  query.bindValue(":etat", contrat.getEtat());
   query.bindValue(":id", contrat.getId());
 
   if (!query.exec()) {
@@ -76,55 +77,123 @@ bool ContratRepository::deleteContrat(unsigned int id) {
   return true;
 }
 
-QList<Contrat> ContratRepository::getAllContrats() {
-  QList<Contrat> contrats;
+QList<QObject *> ContratRepository::getAllContrats() {
+  QList<QObject *> contrats;
   QSqlQuery query("SELECT * FROM contrats", m_dbManager.getDatabase());
-  PrestationRepository prestaRepo(m_dbManager);
-  LigneContratRepository lignesRepo(m_dbManager);
+  PrestationRepository prestaRepo(nullptr, m_dbManager);
+  LigneContratRepository lignesRepo(nullptr, m_dbManager);
 
   while (query.next()) {
     unsigned int id = query.value("idContrat").toUInt();
     // on récupère la liste des lignes liées au contrat:
-    QList<LigneContrat> lignes = lignesRepo.getAllLignesByIdContrat(id);
+    QList<QObject *> lignes = lignesRepo.getAllLignesByIdContrat(id);
 
-    // on récupère la prestation associée
-    Contrat contrat(
-        id,
+    // on crée le contrat a retourner
+    QObject *contrat = new Contrat(
+        nullptr, id,
         // on récupère la prestation associée grace à son id
-        prestaRepo.getPrestationById(query.value("idPrestation").toUInt()),
+        qobject_cast<Prestation *>(
+            prestaRepo.getPrestationById(query.value("idPrestation").toUInt())),
         QDateTime::fromString(query.value("dateHeure").toString(),
                               "yyyy-MM-dd hh:mm:ss"),
-        query.value("remise").toFloat(), query.value("etat").toBool(), lignes);
+        query.value("remise").toFloat(), query.value("etat").toInt(), lignes);
     contrats.append(contrat);
   }
 
   return contrats;
 }
 
-Contrat ContratRepository::getContratById(unsigned int id) {
+QObject *ContratRepository::getContratById(unsigned int id) {
   QSqlQuery query(m_dbManager.getDatabase());
   query.prepare("SELECT * FROM contrats WHERE idContrat = :id");
   query.bindValue(":id", id);
 
   if (!query.exec() || !query.next()) {
-    QList listeVide = QList<LigneContrat>{};
     qDebug() << "Erreur lors de la récupération du contrat par son ID:"
              << query.lastError();
-    return Contrat(0, Prestation(id, "", "", 0, 0, 0), QDateTime(), 0.0f, false,
-                   listeVide); // TODO: gérer l'erreur autrement
+    return nullptr;
   }
 
-  PrestationRepository prestaRepo(m_dbManager);
-  LigneContratRepository lignesRepo(m_dbManager);
+  PrestationRepository prestaRepo(nullptr, m_dbManager);
+  LigneContratRepository lignesRepo(nullptr, m_dbManager);
 
   // on récupère la liste des lignes liées au contrat:
-  QList<LigneContrat> lignes = lignesRepo.getAllLignesByIdContrat(id);
+  QList<QObject *> lignes = lignesRepo.getAllLignesByIdContrat(id);
 
-  return Contrat(
-      id,
-      // on récupère la prestation associée grace à son id
-      prestaRepo.getPrestationById(query.value("idPrestation").toUInt()),
-      QDateTime::fromString(query.value("dateHeure").toString(),
-                            "yyyy-MM-dd hh:mm:ss"),
-      query.value("remise").toFloat(), query.value("etat").toBool(), lignes);
+  return new Contrat(nullptr, id,
+                     // on récupère la prestation associée grace à son id
+                     qobject_cast<Prestation *>(prestaRepo.getPrestationById(
+                         query.value("idPrestation").toUInt())),
+                     QDateTime::fromString(query.value("dateHeure").toString(),
+                                           "yyyy-MM-dd hh:mm:ss"),
+                     query.value("remise").toFloat(),
+                     query.value("etat").toInt(), lignes);
+}
+
+/**
+ * @brief ContratRepository::getContratsConfirmes retourne les contrats validés
+ * (etat a 1)
+ * @return les contrats qui ont étés validés
+ */
+QList<QObject *> ContratRepository::getContratsConfirmes() {
+  QList<QObject *> contrats;
+  // selection des contrats validés uniquement
+  QSqlQuery query("SELECT * FROM contrats WHERE etat = 1",
+                  m_dbManager.getDatabase());
+
+  PrestationRepository prestaRepo(nullptr, m_dbManager);
+  LigneContratRepository lignesRepo(nullptr, m_dbManager);
+
+  while (query.next()) {
+    unsigned int id = query.value("idContrat").toUInt();
+    // on récupère la liste des lignes liées au contrat:
+    QList<QObject *> lignes = lignesRepo.getAllLignesByIdContrat(id);
+
+    // on crée le contrat a retourner
+    QObject *contrat = new Contrat(
+        nullptr, id,
+        // on récupère la prestation associée grace à son id
+        qobject_cast<Prestation *>(
+            prestaRepo.getPrestationById(query.value("idPrestation").toUInt())),
+        QDateTime::fromString(query.value("dateHeure").toString(),
+                              "yyyy-MM-dd hh:mm:ss"),
+        query.value("remise").toFloat(), query.value("etat").toInt(), lignes);
+    contrats.append(contrat);
+  }
+
+  return contrats;
+}
+
+/**
+ * @brief ContratRepository::getContratsConfirmes retourne les contrats en
+ * attente (etat a 0)
+ * @return les contrats qui ont étés validés
+ */
+QList<QObject *> ContratRepository::getContratsNonConfirmes() {
+  QList<QObject *> contrats;
+  // selection des contrats en attente uniquement
+  QSqlQuery query("SELECT * FROM contrats WHERE etat = 0",
+                  m_dbManager.getDatabase());
+
+  PrestationRepository prestaRepo(nullptr, m_dbManager);
+  LigneContratRepository lignesRepo(nullptr, m_dbManager);
+
+  while (query.next()) {
+    unsigned int id = query.value("idContrat").toUInt();
+    // on récupère la liste des lignes liées au contrat:
+    QList<QObject *> lignes = lignesRepo.getAllLignesByIdContrat(id);
+
+    // on crée le contrat a retourner
+    QObject *contrat = new Contrat(
+        nullptr, id,
+        // on récupère la prestation associée grace à son id
+        qobject_cast<Prestation *>(
+            prestaRepo.getPrestationById(query.value("idPrestation").toUInt())),
+        QDateTime::fromString(query.value("dateHeure").toString(),
+                              "yyyy-MM-dd hh:mm:ss"),
+        query.value("remise").toFloat(), query.value("etat").toInt(), lignes);
+    contrats.append(contrat);
+  }
+
+  return contrats;
 }

@@ -17,15 +17,15 @@
 
 #include "lignecontrat.h"
 
-LigneContrat::LigneContrat(unsigned int id, const Client &client,
+LigneContrat::LigneContrat(QObject *parent, unsigned int id, Client *client,
                            unsigned int idContrat, const QString &embarcation,
                            float prix)
-    : m_id(id), m_client(client), m_idContrat(idContrat),
+    : QObject(parent), m_id(id), m_client(client), m_idContrat(idContrat),
       m_embarcation(embarcation), m_prix(prix) {}
 
 unsigned int LigneContrat::getId() const { return m_id; }
 
-Client LigneContrat::getClient() const { return m_client; }
+Client *LigneContrat::getClient() const { return m_client; }
 
 unsigned int LigneContrat::getIdContrat() const { return m_idContrat; }
 

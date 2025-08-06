@@ -21,21 +21,26 @@
 #include "modeles/prestation.h"
 #include "utils/databasemanager.h"
 #include <QList>
+#include <QObject>
 
 /**
  * @brief La classe PrestationRepository a pour but de faire le lien avec la
  * base de donnée pour y enregistrer, récupérer ou mettre a jour les Prestations
  * dans la bdd
  */
-class PrestationRepository {
-public:
-  PrestationRepository(DataBaseManager &dbManager);
+class PrestationRepository : public QObject {
+  Q_OBJECT
 
-  bool addPrestation(const Prestation &prestation);
-  bool updatePrestation(const Prestation &prestation);
-  bool deletePrestation(unsigned int id);
-  QList<Prestation> getAllPrestations();
-  Prestation getPrestationById(unsigned int id);
+public:
+  explicit PrestationRepository(
+      QObject *parent = nullptr,
+      DataBaseManager &dbManager = DataBaseManager::getInstance());
+
+  Q_INVOKABLE bool addPrestation(const Prestation &prestation);
+  Q_INVOKABLE bool updatePrestation(const Prestation &prestation);
+  Q_INVOKABLE bool deletePrestation(unsigned int id);
+  Q_INVOKABLE QList<QObject *> getAllPrestations();
+  Q_INVOKABLE QObject *getPrestationById(unsigned int id);
 
 private:
   DataBaseManager &m_dbManager;

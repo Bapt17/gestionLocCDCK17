@@ -25,33 +25,55 @@
 #include "prestation.h"
 #include <QDateTime>
 #include <QList>
-#include <QString>
+#include <QObject>
 /**
  * @brief La classe contrat fait le lien entre les lignes, le contrat et la
  * prestation choisie
  */
-class Contrat {
+class Contrat : public QObject {
+  // propriétés accessibles dans le qml
+  Q_OBJECT
+  Q_PROPERTY(unsigned int id READ getId CONSTANT)
+  Q_PROPERTY(Prestation *prestation READ getPrestation CONSTANT)
+  Q_PROPERTY(QDateTime dateHeure READ getDateHeure CONSTANT)
+  Q_PROPERTY(float remise READ getRemise WRITE setRemise NOTIFY remiseChanged)
+  Q_PROPERTY(int etat READ getEtat WRITE setEtat NOTIFY etatChanged)
+  Q_PROPERTY(QList<QObject *> lignes READ getLignes WRITE setLignes NOTIFY
+                 lignesChanged)
+
 public:
-  Contrat(unsigned int id, const Prestation &prestation,
-          const QDateTime &dateHeure, float remise, bool confirme,
-          QList<LigneContrat> &lignes);
+  Contrat(QObject *parent = nullptr, unsigned int id = 0,
+          Prestation *prestation = nullptr,
+          const QDateTime &dateHeure = QDateTime(), float remise = 0,
+          int etat = 0, QList<QObject *> lignes = QList<QObject *>());
 
   unsigned int getId() const;
-  Prestation getPrestation() const;
+
+  Prestation *getPrestation() const;
+
   QDateTime getDateHeure() const;
+
   float getRemise() const;
-  bool getConfirme() const;
-  QList<LigneContrat> getLignes() const;
+  void setRemise(float remise);
+
+  int getEtat() const;
+  void setEtat(int etat);
+
+  QList<QObject *> getLignes() const;
+  void setLignes(const QList<QObject *> &lignes);
+
+signals:
+  void remiseChanged();
+  void etatChanged();
+  void lignesChanged();
 
 private:
   unsigned int m_id;
-  Prestation m_prestation;
+  Prestation *m_prestation;
   QDateTime m_dateHeure;
-  float m_remise;  // pas utilisée pour le moment mais servira peut être par la
-                   // suite
-  bool m_confirme; // défini si le contrat est terminé et fini d'être
-                   // remplie/payé
-  QList<LigneContrat> m_lignes; // liste des lignes liés au contrat
+  float m_remise;
+  int m_etat;
+  QList<QObject *> m_lignes;
 };
 
 #endif // CONTRAT_H
