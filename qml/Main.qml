@@ -16,21 +16,105 @@
  * GestionLocCDCK17.If not, see https://www.gnu.org/licenses/.*/
 
 import QtQuick
+import QtQuick.Controls
+import QtQuick.Layouts
 
-Window {
-    width: 640
-    height: 480
+ApplicationWindow {
     visible: true
-    title: qsTr("Hello World")
-    Rectangle{
-        width: 20
-        height: 30
-        x: 10
-        y: 20
-        color: "blue"
+    width: 800
+    height: 600
+    title: qsTr("Gestion des Contrats")
+
+    ColumnLayout {
+        anchors.fill: parent
+        spacing: 10
+
+        Button {
+            text: "Ajouter un Contrat"
+            Layout.alignment: Qt.AlignHCenter
+            onClicked: {
+                console.log("Ajouter un Contrat clicked")
+                // Navigation vers la page de création de contrat
+            }
+        }
+
         Text {
-            id: text
-            text: qsTr("HELLO")
+            text: "Contrats Non Confirmés"
+            font.bold: true
+            Layout.alignment: Qt.AlignHCenter
+        }
+
+        ListView {
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            model: contratRepository.contratsNonConfirmes
+            delegate: Rectangle {
+                width: parent.width
+                height: 50
+                border.color: "lightgray"
+                color: "white"
+
+                Row {
+                    spacing: 10
+                    anchors.centerIn: parent
+
+                    Text { text: "N°" + modelData.id; width: 50 }
+                    Text { text: modelData.prestation.nom; width: 150 }
+                    Text { text: modelData.dateHeure; width: 150 }
+                    Text { text: modelData.prixTotal + " €"; width: 100 }
+
+                    Button {
+                        text: "Valider"
+                        onClicked: {
+                            contratRepository.validerContrat(modelData.id)
+                        }
+                    }
+                }
+
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: {
+                        console.log("Contrat clicked:", modelData.id)
+                        // Navigation vers la page de visualisation du contrat
+                    }
+                }
+            }
+        }
+
+        Text {
+            text: "Contrats Confirmés"
+            font.bold: true
+            Layout.alignment: Qt.AlignHCenter
+        }
+
+        ListView {
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            model: contratRepository.contratsConfirmes
+            delegate: Rectangle {
+                width: parent.width
+                height: 50
+                border.color: "lightgray"
+                color: "lightblue"
+
+                Row {
+                    spacing: 10
+                    anchors.centerIn: parent
+
+                    Text { text: "N°" + modelData.id; width: 50 }
+                    Text { text: modelData.prestation.nom; width: 150 }
+                    Text { text: modelData.dateHeure; width: 150 }
+                    Text { text: modelData.prixTotal + " €"; width: 100 }
+                }
+
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: {
+                        console.log("Contrat clicked:", modelData.id)
+                        // Navigation vers la page de visualisation du contrat
+                    }
+                }
+            }
         }
     }
 }

@@ -88,6 +88,20 @@ bool DataBaseManager::initialiser(const QString &chemin) {
         qDebug() << "Erreur: impossible de créer la table lignesContrat";
       }
 
+      // table pour contenir les informations du club utilisant le logiciel
+      // (surtout utilisé pour afficher sur le ticket de caisse et pour mettre
+      // le mail dans les assurances fédérales
+      if (!requete.exec("CREATE TABLE club ("
+                        "id INTEGER PRIMARY KEY AUTOINCREMENT,"
+                        "nom TEXT NOT NULL,"
+                        "email TEXT NOT NULL,"
+                        "tel TEXT NOT NULL,"
+                        "adresse TEXT NOT NULL,"
+                        "codePostal TEXT NOT NULL,"
+                        "ville TEXT NOT NULL")) {
+        qDebug() << "Erreur: impossible de créer la table club";
+      }
+
       // table pour gérer et garder en mémoire la version
       if (!requete.exec(
               "CREATE TABLE schema_versions ("
