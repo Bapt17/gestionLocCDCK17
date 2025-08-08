@@ -29,7 +29,9 @@ int main(int argc, char *argv[]) {
   // utilisation soit l'ouvrir les autre fois
   // TODO: il pourait être utile de laisser la possibilité à l'utilisateur de
   // choisir le fichier a ouvrir si aucun n'est encore créé
-  DataBaseManager::initialiser();
+  if (!DataBaseManager::initialiser()) {
+    return -1;
+  }
 
   qmlRegisterType<Contrat>("GestionLocCDCK17", 1, 0, "Contrat");
 

@@ -19,7 +19,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 
-ApplicationWindow {
+Window {
     visible: true
     width: 800
     height: 600
@@ -58,9 +58,9 @@ ApplicationWindow {
                     spacing: 10
                     anchors.centerIn: parent
 
-                    Text { text: "N°" + modelData.id; width: 50 }
+                    Text { text: "N°" + modelData.id; width: 50}
                     Text { text: modelData.prestation.nom; width: 150 }
-                    Text { text: modelData.dateHeure; width: 150 }
+                    Text { text: Qt.formatDateTime(modelData.dateHeure, "dd/MM/yyyy hh:mm"); width: 150 }
                     Text { text: modelData.prixTotal + " €"; width: 100 }
 
                     Button {
@@ -103,7 +103,7 @@ ApplicationWindow {
 
                     Text { text: "N°" + modelData.id; width: 50 }
                     Text { text: modelData.prestation.nom; width: 150 }
-                    Text { text: modelData.dateHeure; width: 150 }
+                    Text { text: Qt.formatDateTime(modelData.dateHeure, "dd/MM/yyyy hh:mm"); width: 150 }
                     Text { text: modelData.prixTotal + " €"; width: 100 }
                 }
 
