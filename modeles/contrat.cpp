@@ -21,15 +21,7 @@ Contrat::Contrat(QObject *parent, unsigned int id, Prestation *prestation,
                  const QDateTime &dateHeure, float remise, int etat,
                  QList<QObject *> lignes)
     : m_id(id), m_prestation(prestation), m_dateHeure(dateHeure),
-      m_remise(remise), m_etat(etat), m_lignes(lignes) {
-  // Vérifiez que les lignes sont correctement initialisées
-  for (QObject *ligne : m_lignes) {
-    LigneContrat *ligneContrat = qobject_cast<LigneContrat *>(ligne);
-    if (ligneContrat) {
-      qDebug() << "Ligne ajoutée:" << ligneContrat->getId();
-    }
-  }
-}
+      m_remise(remise), m_etat(etat), m_lignes(lignes) {}
 
 unsigned int Contrat::getId() const { return m_id; }
 

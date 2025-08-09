@@ -160,8 +160,9 @@ QObject *ContratRepository::getContratById(unsigned int id) {
 QList<QObject *> ContratRepository::getContratsConfirmes() {
   QList<QObject *> contrats;
   // selection des contrats validés uniquement
-  QSqlQuery query("SELECT * FROM contrats WHERE etat = 1 ORDER BY dateHeure",
-                  m_dbManager.getDatabase());
+  QSqlQuery query(
+      "SELECT * FROM contrats WHERE etat = 1 ORDER BY dateHeure DESC",
+      m_dbManager.getDatabase());
 
   PrestationRepository prestaRepo(nullptr, m_dbManager);
   LigneContratRepository lignesRepo(nullptr, m_dbManager);
@@ -194,8 +195,9 @@ QList<QObject *> ContratRepository::getContratsConfirmes() {
 QList<QObject *> ContratRepository::getContratsNonConfirmes() {
   QList<QObject *> contrats;
   // selection des contrats en attente uniquement
-  QSqlQuery query("SELECT * FROM contrats WHERE etat = 0 ORDER BY dateHeure",
-                  m_dbManager.getDatabase());
+  QSqlQuery query(
+      "SELECT * FROM contrats WHERE etat = 0 ORDER BY dateHeure DESC",
+      m_dbManager.getDatabase());
 
   PrestationRepository prestaRepo(nullptr, m_dbManager);
   LigneContratRepository lignesRepo(nullptr, m_dbManager);
