@@ -43,7 +43,7 @@ bool DataBaseManager::initialiser(const QString &chemin) {
                         "idClient INTEGER PRIMARY KEY AUTOINCREMENT,"
                         "nom TEXT NOT NULL,"
                         "prenom TEXT NOT NULL,"
-                        "dateNaissance TEXT NOT NULL,"
+                        "dateNaissance DATE NOT NULL,"
                         "genre TEXT NOT NULL,"
                         "codePostal TEXT NOT NULL default 'inconnu')")) {
         qDebug() << "Erreur: impossible de créer la table clients";
@@ -65,7 +65,7 @@ bool DataBaseManager::initialiser(const QString &chemin) {
               "CREATE TABLE contrats ("
               "idContrat INTEGER PRIMARY KEY,"
               "idPrestation INTEGER NOT NULL,"
-              "dateHeure TEXT NOT NULL,"
+              "dateHeure DATETIME NOT NULL,"
               "remise NUMERIC NOT NULL DEFAULT 0,"
               "etat INTEGER NOT NULL DEFAULT 0," // etat est a 0 pour brouillon,
                                                  // 1 pour confirme et
