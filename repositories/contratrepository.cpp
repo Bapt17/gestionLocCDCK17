@@ -43,25 +43,42 @@ bool ContratRepository::addContrat(const Contrat &contrat) {
     qDebug() << "Erreur à l'ajout du contrat:" << query.lastError();
     return false;
   }
+
+  // emission des signaux pour mettre a jour les listes des contrats
+  emit contratsNonConfirmesChanged();
+  emit contratsConfirmesChanged();
+
   return true;
 }
 
-bool ContratRepository::updateContrat(const Contrat &contrat) {
+bool ContratRepository::updateContrat(QObject *contratObj) {
+  // on convertis en contrat, cela permet de récupérer les objects du qml
+  Contrat *contrat = qobject_cast<Contrat *>(contratObj);
+  if (!contrat) {
+    qDebug() << "Erreur: impossible de convertir l'objet en Contrat";
+    return false;
+  }
+
   QSqlQuery query(m_dbManager.getDatabase());
   query.prepare("UPDATE contrats SET idPrestation = :idPrestation, dateHeure = "
                 ":dateHeure, "
                 "remise = :remise, etat = :etat WHERE idContrat = :id");
-  query.bindValue(":idPrestation", contrat.getPrestation()->getId());
+  query.bindValue(":idPrestation", contrat->getPrestation()->getId());
   query.bindValue(":dateHeure",
-                  contrat.getDateHeure().toString("yyyy-MM-dd hh:mm:ss"));
-  query.bindValue(":remise", contrat.getRemise());
-  query.bindValue(":etat", contrat.getEtat());
-  query.bindValue(":id", contrat.getId());
+                  contrat->getDateHeure().toString("yyyy-MM-dd hh:mm:ss"));
+  query.bindValue(":remise", contrat->getRemise());
+  query.bindValue(":etat", contrat->getEtat());
+  query.bindValue(":id", contrat->getId());
 
   if (!query.exec()) {
     qDebug() << "Erreur à la mise à jour du contrat:" << query.lastError();
     return false;
   }
+
+  // emission des signaux pour mettre a jour les listes des contrats
+  emit contratsNonConfirmesChanged();
+  emit contratsConfirmesChanged();
+
   return true;
 }
 
@@ -74,6 +91,11 @@ bool ContratRepository::deleteContrat(unsigned int id) {
     qDebug() << "Erreur à la suppression du contrat:" << query.lastError();
     return false;
   }
+
+  // emission des signaux pour mettre a jour les listes des contrats
+  emit contratsNonConfirmesChanged();
+  emit contratsConfirmesChanged();
+
   return true;
 }
 
@@ -138,7 +160,7 @@ QObject *ContratRepository::getContratById(unsigned int id) {
 QList<QObject *> ContratRepository::getContratsConfirmes() {
   QList<QObject *> contrats;
   // selection des contrats validés uniquement
-  QSqlQuery query("SELECT * FROM contrats WHERE etat = 1",
+  QSqlQuery query("SELECT * FROM contrats WHERE etat = 1 ORDER BY dateHeure",
                   m_dbManager.getDatabase());
 
   PrestationRepository prestaRepo(nullptr, m_dbManager);
@@ -172,7 +194,7 @@ QList<QObject *> ContratRepository::getContratsConfirmes() {
 QList<QObject *> ContratRepository::getContratsNonConfirmes() {
   QList<QObject *> contrats;
   // selection des contrats en attente uniquement
-  QSqlQuery query("SELECT * FROM contrats WHERE etat = 0",
+  QSqlQuery query("SELECT * FROM contrats WHERE etat = 0 ORDER BY dateHeure",
                   m_dbManager.getDatabase());
 
   PrestationRepository prestaRepo(nullptr, m_dbManager);

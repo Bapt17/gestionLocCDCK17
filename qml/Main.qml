@@ -39,12 +39,13 @@ Window {
         }
 
         Text {
-            text: "Contrats Non Confirmés"
+            text: "Contrats en attente"
             font.bold: true
             Layout.alignment: Qt.AlignHCenter
         }
 
         ListView {
+            id: listViewNonConfirmes
             Layout.fillWidth: true
             Layout.fillHeight: true
             model: contratRepository.contratsNonConfirmes
@@ -53,41 +54,44 @@ Window {
                 height: 50
                 border.color: "lightgray"
                 color: "white"
-
-                Row {
-                    spacing: 10
-                    anchors.centerIn: parent
-
-                    Text { text: "N°" + modelData.id; width: 50}
-                    Text { text: modelData.prestation.nom; width: 150 }
-                    Text { text: Qt.formatDateTime(modelData.dateHeure, "dd/MM/yyyy hh:mm"); width: 150 }
-                    Text { text: modelData.prixTotal + " €"; width: 100 }
-
-                    Button {
-                        text: "Valider"
-                        onClicked: {
-                            contratRepository.validerContrat(modelData.id)
-                        }
-                    }
-                }
-
                 MouseArea {
                     anchors.fill: parent
                     onClicked: {
                         console.log("Contrat clicked:", modelData.id)
                         // Navigation vers la page de visualisation du contrat
                     }
+
+                    Row {
+                        spacing: 10
+                        anchors.centerIn: parent
+
+                        Text { text: "N°" + modelData.id; width: 50}
+                        Text { text: modelData.prestation.nom; width: 150 }
+                        Text { text: Qt.formatDateTime(modelData.dateHeure, "dd/MM/yyyy hh:mm"); width: 150 }
+                        Text { text: modelData.nbLignes; width: 100 }
+
+                        Button {
+                            text: "Valider"
+                            onClicked: {
+                                //on passe l'état du contrat a validé
+                                modelData.etat = 1
+                                contratRepository.updateContrat(modelData)
+                                console.log("valider cliqué")
+                            }
+                        }
+                    }
                 }
             }
         }
 
         Text {
-            text: "Contrats Confirmés"
+            text: "Contrats validés"
             font.bold: true
             Layout.alignment: Qt.AlignHCenter
         }
 
         ListView {
+            id: listViewConfirmes
             Layout.fillWidth: true
             Layout.fillHeight: true
             model: contratRepository.contratsConfirmes
@@ -97,21 +101,21 @@ Window {
                 border.color: "lightgray"
                 color: "lightblue"
 
-                Row {
-                    spacing: 10
-                    anchors.centerIn: parent
-
-                    Text { text: "N°" + modelData.id; width: 50 }
-                    Text { text: modelData.prestation.nom; width: 150 }
-                    Text { text: Qt.formatDateTime(modelData.dateHeure, "dd/MM/yyyy hh:mm"); width: 150 }
-                    Text { text: modelData.prixTotal + " €"; width: 100 }
-                }
-
                 MouseArea {
                     anchors.fill: parent
                     onClicked: {
                         console.log("Contrat clicked:", modelData.id)
                         // Navigation vers la page de visualisation du contrat
+                    }
+
+                    Row {
+                        spacing: 10
+                        anchors.centerIn: parent
+
+                        Text { text: "N°" + modelData.id; width: 50 }
+                        Text { text: modelData.prestation.nom; width: 150 }
+                        Text { text: Qt.formatDateTime(modelData.dateHeure, "dd/MM/yyyy hh:mm"); width: 150 }
+                        Text { text: modelData.nbLignes; width: 100 }
                     }
                 }
             }

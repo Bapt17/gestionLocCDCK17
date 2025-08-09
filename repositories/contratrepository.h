@@ -41,7 +41,7 @@ public:
       DataBaseManager &dbManager = DataBaseManager::getInstance());
 
   Q_INVOKABLE bool addContrat(const Contrat &contrat);
-  Q_INVOKABLE bool updateContrat(const Contrat &contrat);
+  Q_INVOKABLE bool updateContrat(QObject *contratObj);
   Q_INVOKABLE bool deleteContrat(unsigned int id);
   Q_INVOKABLE QList<QObject *> getAllContrats();
   Q_INVOKABLE QObject *getContratById(unsigned int id);

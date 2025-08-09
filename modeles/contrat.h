@@ -40,6 +40,7 @@ class Contrat : public QObject {
   Q_PROPERTY(int etat READ getEtat WRITE setEtat NOTIFY etatChanged)
   Q_PROPERTY(QList<QObject *> lignes READ getLignes WRITE setLignes NOTIFY
                  lignesChanged)
+  Q_PROPERTY(int nbLignes READ getNbLignes NOTIFY lignesChanged)
 
 public:
   Contrat(QObject *parent = nullptr, unsigned int id = 0,
@@ -61,6 +62,12 @@ public:
 
   QList<QObject *> getLignes() const;
   void setLignes(const QList<QObject *> &lignes);
+
+  /**
+   * @brief getNbLignes coimpte les lignes/personnes attribuées au contrat
+   * @return le nombre de lignes associés au contrat
+   */
+  int getNbLignes() const;
 
 signals:
   void remiseChanged();

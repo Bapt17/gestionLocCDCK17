@@ -108,8 +108,7 @@ QObject *LigneContratRepository::getLigneContratById(unsigned int id) {
   }
   // on récupère le client relié grace a son id
   ClientRepository clientRepo(nullptr, m_dbManager);
-  QObject *client =
-      (Client *)clientRepo.getClientById(query.value("idClient").toUInt());
+  QObject *client = clientRepo.getClientById(query.value("idClient").toUInt());
 
   return new LigneContrat(
       nullptr, query.value("idLigne").toUInt(), qobject_cast<Client *>(client),
@@ -120,17 +119,26 @@ QObject *LigneContratRepository::getLigneContratById(unsigned int id) {
 QList<QObject *>
 LigneContratRepository::getAllLignesByIdContrat(unsigned int id) {
   QList<QObject *> lignesContrat;
-  QSqlQuery query("SELECT idLigne, idClient, embarcation, prix"
-                  "FROM lignesContrat"
-                  "WHERE idContrat = :id",
-                  m_dbManager.getDatabase());
+  QSqlQuery query(m_dbManager.getDatabase());
+  query.prepare("SELECT idLigne, idClient, embarcation, prix "
+                "FROM lignesContrat "
+                "WHERE idContrat = :id");
+  query.bindValue(":id", id);
+
+  if (!query.exec()) {
+    qDebug() << "Erreur à la récupération des lignes du contrat: " << id
+             << query.lastError();
+    return QList<QObject *>();
+  }
+
   ClientRepository clientRepo(nullptr, m_dbManager);
 
   while (query.next()) {
-    Client *client =
-        (Client *)clientRepo.getClientById(query.value("idClient").toUInt());
+    QObject *client =
+        clientRepo.getClientById(query.value("idClient").toUInt());
     QObject *ligneContrat = new LigneContrat(
-        nullptr, query.value("idLigne").toUInt(), client, id,
+        nullptr, query.value("idLigne").toUInt(),
+        qobject_cast<Client *>(client), id,
         query.value("embarcation").toString(), query.value("prix").toFloat());
     lignesContrat.append(ligneContrat);
   }
